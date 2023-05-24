@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19461" systemVersion="20G224" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="ExerciseData" representedClassName="ExerciseData" syncable="YES" codeGenerationType="class">
+        <attribute name="meta" optional="YES" attributeType="Binary"/>
+        <attribute name="motionData" optional="YES" attributeType="Binary"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="previewOffset" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="thumnailName" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="uid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="videoName" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="SessionResultData" representedClassName="SessionResultData" syncable="YES" codeGenerationType="class">
+        <attribute name="content" optional="YES" attributeType="Binary"/>
+        <attribute name="exerciseId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
+    <elements>
+        <element name="ExerciseData" positionX="-63" positionY="-18" width="128" height="149"/>
+        <element name="SessionResultData" positionX="-63" positionY="18" width="128" height="59"/>
+    </elements>
+</model>

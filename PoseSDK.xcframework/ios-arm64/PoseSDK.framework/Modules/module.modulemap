@@ -1,0 +1,11 @@
+framework module PoseSDK {
+  umbrella header "PoseSDK.h"
+
+  export *
+  module * { export * }
+}
+
+module PoseSDK.Swift {
+    header "PoseSDK-Swift.h"
+    requires objc
+}

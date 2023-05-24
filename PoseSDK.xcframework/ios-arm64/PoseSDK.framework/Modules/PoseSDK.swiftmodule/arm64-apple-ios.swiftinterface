@@ -1,0 +1,190 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)
+// swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name PoseSDK
+import AVFoundation
+import Combine
+import CoreImage
+import CoreMedia
+import Dispatch
+import Foundation
+@_exported import PoseSDK
+import QuartzCore
+import Swift
+import UIKit
+import _Concurrency
+import simd
+extension CoreMedia.CMSampleBuffer {
+  public var cgImage: CoreGraphics.CGImage? {
+    get
+  }
+}
+public protocol VMFrameSource : AnyObject {
+  func nextFrame() -> PoseSDK.VMRawFrame?
+}
+public struct VMPose {
+  public typealias Keypoints = [PoseSDK.VMBodyPart : PoseSDK.VMKeypoint]
+  public typealias Bone = (PoseSDK.VMBodyPart, PoseSDK.VMBodyPart)
+  public var keypoints: PoseSDK.VMPose.Keypoints
+  public var bounds: CoreGraphics.CGRect
+  public static let skeleton: [PoseSDK.VMPose.Bone]
+  public init()
+  public init?(scene: PoseSDK.VMScene, minKeypointConfidence: Swift.Float)
+  public var keypointsBoundingBox: CoreGraphics.CGRect? {
+    get
+  }
+  public func boundingRadius(relativeTo benchmark: PoseSDK.VMBodyPart) -> CoreGraphics.CGFloat?
+  public func normalizedKeypoints(relativeTo benchmark: PoseSDK.VMBodyPart) -> PoseSDK.VMPose.Keypoints?
+  public func deviation(from otherPose: PoseSDK.VMPose) -> PoseSDK.VMDeviation
+  @_hasMissingDesignatedInitializers public class Keys {
+    @objc deinit
+  }
+  public func serialize() -> [Swift.String : Any]
+  public init(serializedData: [Swift.String : Any])
+}
+public class VMRawFrame {
+  public var timestamp: CoreMedia.CMTime
+  public var content: CoreMedia.CMSampleBuffer
+  public init(timestamp: CoreMedia.CMTime, content: CoreMedia.CMSampleBuffer)
+  @objc deinit
+}
+public struct VMDeviation {
+  public var value: Swift.Float
+  public var accuracy: Swift.Float
+  public init(value: Swift.Float, accuracy: Swift.Float)
+}
+public class VMBodyDetector : Foundation.ObservableObject {
+  public init(options: PoseSDK.VMBodyDetectorOptionsRef)
+  @objc deinit
+  public func detectBody(in content: CoreGraphics.CGImage?, at timestamp: CoreMedia.CMTime) -> PoseSDK.VMScene
+  public func detectBody(in frame: PoseSDK.VMRawFrame) -> PoseSDK.VMScene
+  public func detectBody(in content: CoreGraphics.CGImage?, at timestamp: CoreMedia.CMTime, completion: @escaping (PoseSDK.VMScene) -> Swift.Void)
+  public func detectBody(in frame: PoseSDK.VMRawFrame, completion: @escaping (PoseSDK.VMScene) -> Swift.Void)
+  public func process(_ source: PoseSDK.VMFrameSource, completion: @escaping ([PoseSDK.VMScene]) -> Swift.Void)
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+}
+public protocol VMCaptureDevice : AnyObject {
+  associatedtype FramePublisher : Combine.Publisher where Self.FramePublisher.Failure == Swift.Never, Self.FramePublisher.Output == CoreMedia.CMSampleBuffer
+  var framePublisher: Self.FramePublisher { get }
+  func startCapture()
+  func stopCapture()
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class VMCameraView : UIKit.UIView, AVFoundation.AVCaptureVideoDataOutputSampleBufferDelegate, PoseSDK.VMCaptureDevice {
+  @_Concurrency.MainActor(unsafe) public static let shared: PoseSDK.VMCameraView
+  @_Concurrency.MainActor(unsafe) public var mirrored: Swift.Bool {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public var framePublisher: Combine.PassthroughSubject<CoreMedia.CMSampleBuffer, Swift.Never> {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public func startCapture()
+  @_Concurrency.MainActor(unsafe) public func stopCapture()
+  @objc deinit
+  @_Concurrency.MainActor(unsafe) @objc public func captureOutput(_ output: AVFoundation.AVCaptureOutput, didOutput sampleBuffer: CoreMedia.CMSampleBuffer, from connection: AVFoundation.AVCaptureConnection)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public var frame: CoreGraphics.CGRect {
+    @_Concurrency.MainActor(unsafe) @objc get
+    @_Concurrency.MainActor(unsafe) @objc set(newValue)
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func didMoveToSuperview()
+  public typealias FramePublisher = Combine.PassthroughSubject<CoreMedia.CMSampleBuffer, Swift.Never>
+}
+public class VMCaptureDeviceObserver<Device> where Device : PoseSDK.VMCaptureDevice {
+  public init(detector: PoseSDK.VMBodyDetector, timeScale: CoreMedia.CMTimeScale)
+  @Combine.Published @_projectedValueProperty($scene) public var scene: PoseSDK.VMScene {
+    get
+    set
+    _modify
+  }
+  public var $scene: Combine.Published<PoseSDK.VMScene>.Publisher {
+    get
+    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, macOS 11.0, *)
+    set
+  }
+  public var frameSubject: Combine.CurrentValueSubject<PoseSDK.VMRawFrame?, Swift.Never> {
+    get
+  }
+  public var currentFrame: PoseSDK.VMRawFrame? {
+    get
+  }
+  public var isObserving: Swift.Bool {
+    get
+  }
+  public var startTimestamp: Foundation.Date {
+    get
+  }
+  public var timeScale: CoreMedia.CMTimeScale
+  public func observe(captureDevice: Device)
+  public func stopObserving()
+  @objc deinit
+}
+public class VMScene {
+  public init()
+  public var impl: PoseSDK.VMSceneImplRef {
+    get
+  }
+  @objc deinit
+  public enum SceneError : Swift.Error {
+    case keypointIndexOutOfRange
+    public static func == (a: PoseSDK.VMScene.SceneError, b: PoseSDK.VMScene.SceneError) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public var keypointCount: Darwin.size_t {
+    get
+  }
+  public func keypoint(at index: Darwin.size_t) throws -> PoseSDK.VMKeypoint
+  public var width: Darwin.size_t {
+    get
+  }
+  public var height: Darwin.size_t {
+    get
+  }
+  public var hasBody: Swift.Bool {
+    get
+  }
+  public var bodyBounds: CoreGraphics.CGRect {
+    get
+  }
+  public var timestamp: CoreMedia.CMTime {
+    get
+    set(newValue)
+  }
+}
+public enum VMBodyPart : Darwin.size_t, Swift.CaseIterable, Swift.Identifiable {
+  public typealias RawValue = Darwin.size_t
+  case headTop
+  case upperNeck
+  case rightShoulder
+  case rightElbow
+  case rightWrist
+  case thorax
+  case leftShoulder
+  case leftElbow
+  case leftWrist
+  case pelvis
+  case rightHip
+  case rightKnee
+  case rightAnkle
+  case leftHip
+  case leftKnee
+  case leftAnkle
+  public var id: Darwin.size_t {
+    get
+  }
+  public init?(rawValue: Darwin.size_t)
+  public typealias AllCases = [PoseSDK.VMBodyPart]
+  public typealias ID = Darwin.size_t
+  public static var allCases: [PoseSDK.VMBodyPart] {
+    get
+  }
+  public var rawValue: Darwin.size_t {
+    get
+  }
+}
+extension PoseSDK.VMScene.SceneError : Swift.Equatable {}
+extension PoseSDK.VMScene.SceneError : Swift.Hashable {}
+extension PoseSDK.VMBodyPart : Swift.Equatable {}
+extension PoseSDK.VMBodyPart : Swift.Hashable {}
+extension PoseSDK.VMBodyPart : Swift.RawRepresentable {}
